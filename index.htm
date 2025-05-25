@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Conta Gallerie Stradali (con GPS)</title>
+  <style>
+    body { font-family: sans-serif; padding: 1rem; }
+    video { width: 100%; max-width: 320px; border-radius: 8px; }
+    .info { margin-top: 1rem; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Conta Gallerie Stradali</h1>
+
+  <video id="video" autoplay playsinline muted></video>
+
+  <div class="info">
+    <p><strong>Luminosità media:</strong> <span id="brightness">--</span></p>
+    <p><strong>Velocità:</strong> <span id="speed">--</span> km/h</p>
+    <p><strong>Gallerie contate:</strong> <span id="count">0</span></p>
+    <p><strong>Posizione:</strong> <span id="location">--</span></p>
+    <button onclick="resetCounter()">Reset</button>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const brightnessEl = document.getElementById('brightness');
+    const speedEl = document.getElementById('speed');
+    const countEl = document.getElementById('count');
+    const locationEl = document.getElementById('location');
+
+    let count = parseInt(localStorage.getItem("tunnelCount")) || 0;
+    countEl.textContent = count;
+
+    let insideTunnel = false;
+    let currentSpeed = 0;
+
+    // Fotocamera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        setInterval(() => {
+          if (!video.videoWidth) return;
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const pixels = frame.data;
+
+          let total = 0;
+          for (let i = 0; i < pixels.length; i += 4) {
+            const r = pixels[i];
+            const g = pixels[i + 1];
+            const b = pixels[i + 2];
+            total += (r + g + b) / 3;
+          }
+
+          const avgBrightness = total / (pixels.length / 4);
+          brightnessEl.textContent = avgBrightness.toFixed(0);
+
+          // Conta solo se siamo in movimento > 30 km/h e luminosità bassa
+          if (avgBrightness < 50 && currentSpeed > 30 && !insideTunnel) {
+            insideTunnel = true;
+            count++;
+            countEl.textContent = count;
+            localStorage.setItem("tunnelCount", count);
+          } else if (avgBrightness > 100 && insideTunnel) {
+            insideTunnel = false;
+          }
+        }, 1000);
+      })
+      .catch(err => alert("Errore accesso fotocamera: " + err));
+
+    // Geolocalizzazione + velocità
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(pos => {
+        const lat = pos.coords.latitude.toFixed(5);
+        const lon = pos.coords.longitude.toFixed(5);
+        const speedMps = pos.coords.speed ?? 0; // metri/secondo
+        currentSpeed = (speedMps * 3.6).toFixed(1); // km/h
+        speedEl.textContent = currentSpeed;
+        locationEl.textContent = `${lat}, ${lon}`;
+      }, err => {
+        locationEl.textContent = "Errore GPS";
+        speedEl.textContent = "--";
+      }, {
+        enableHighAccuracy: true,
+        maximumAge: 1000,
+        timeout: 5000
+      });
+    }
+
+    function resetCounter() {
+      if (confirm("Sei sicuro di voler azzerare il conteggio?")) {
+        count = 0;
+        localStorage.setItem("tunnelCount", count);
+        countEl.textContent = count;
+      }
+    }
+  </script>
+</body>
+</html>
