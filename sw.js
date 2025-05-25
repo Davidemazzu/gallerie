@@ -1,7 +1,7 @@
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open('gallerie-cache').then(cache => {
-      return cache.addAll(['index.htm', 'manifest.json', 'icon.png']);
+      return cache.addAll(['index.html', 'manifest.json', 'icon.png']);
     })
   );
 });
