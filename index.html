@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Conta Gallerie</title>
+  <title>Conta Gallerie - App per Contare Tunnel Automaticamente</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0d0f23" />
+  <meta name="description" content="Conta Gallerie è una PWA che rileva automaticamente le gallerie stradali in base alla luminosità e alla velocità.">
+	<meta name="keywords" content="gallerie, tunnel, contatore, luminosità, velocità, GPS, PWA, viaggi, auto, app viaggio">
+	<meta name="robots" content="index, follow">
   <link rel="icon" type="image/png" href="icon.png" />
   <link rel="apple-touch-icon" href="icon.png" />
   <style>
@@ -25,49 +28,6 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-    }
-
-    /* Nasconde tutto tranne il loader */
-    h1, #video, #dashboard, #summary {
-      display: none;
-    }
-
-    body.loaded h1,
-    body.loaded #video,
-    body.loaded #dashboard,
-    body.loaded #summary {
-      display: block;
-    }
-
-    #loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #0d0f23;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      animation: fadeOut 1s ease forwards;
-      animation-delay: 2s;
-    }
-
-    @keyframes fadeOut {
-      to { opacity: 0; visibility: hidden; }
-    }
-
-    .logo-glow {
-      font-size: 2rem;
-      color: #00ffe0;
-      text-shadow: 0 0 10px #00ffe0;
-      animation: glow 1.2s infinite ease-in-out;
-    }
-
-    @keyframes glow {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
     }
 
     h1 {
@@ -95,14 +55,6 @@
       width: 90%;
       max-width: 360px;
       box-shadow: 0 0 20px rgba(0, 255, 247, 0.1);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-
-    body.loaded .glass {
-      opacity: 1;
-      transform: translateY(0);
     }
 
     .info-item {
@@ -152,7 +104,6 @@
   </style>
 </head>
 <body>
-  <div id="loader"><div class="logo-glow">🚀 Conta Gallerie</div></div>
 
   <h1>Conta Gallerie</h1>
   <video id="video" autoplay playsinline muted></video>
@@ -171,14 +122,13 @@
     <p>Durata: <span id="summaryTime"></span></p>
     <p>Ultima posizione: <span id="summaryLocation"></span></p>
     <button onclick="copySummary()">📤 Copia riepilogo</button>
-	<button onclick="backToDashboard()">🔙 Torna alla dashboard</button>
+    <button onclick="backToDashboard()">🔙 Torna alla dashboard</button>
   </div>
 
   <script>
     const video = document.getElementById('video');
     const brightnessEl = document.getElementById('brightness');
     const speedEl = document.getElementById('speed');
-    const locationEl = document.getElementById('location');
     const countEl = document.getElementById('count');
     const summaryCount = document.getElementById('summaryCount');
     const summaryTime = document.getElementById('summaryTime');
@@ -191,10 +141,10 @@
     let lastLat = '--', lastLon = '--';
     let startTime = new Date();
 
-function backToDashboard() {
-  document.getElementById('summary').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
-}
+    function backToDashboard() {
+      document.getElementById('summary').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+    }
 
     async function startCamera() {
       try {
@@ -251,16 +201,13 @@ function backToDashboard() {
         const speedMps = pos.coords.speed ?? 0;
         currentSpeed = speedMps * 3.6;
         speedEl.textContent = currentSpeed.toFixed(1);
-       
       });
     }
 
     function resetCounter() {
-     
-        count = 0;
-        localStorage.setItem("tunnelCount", count);
-        countEl.textContent = count;
-      
+      count = 0;
+      localStorage.setItem("tunnelCount", count);
+      countEl.textContent = count;
     }
 
     function showSummary() {
@@ -285,21 +232,16 @@ function backToDashboard() {
     }
 
     window.onload = () => {
-  document.getElementById('summary').style.display = 'none'; // Forza a nascondere il riepilogo all’avvio
-  setTimeout(() => {
-    document.getElementById('loader').style.display = 'none';
-    document.body.classList.add('loaded');
-    startCamera();
-  }, 2000);
-};
+      startCamera();
+    };
   </script>
-   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YX78WFSZ8R"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-YX78WFSZ8R');
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YX78WFSZ8R"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-YX78WFSZ8R');
+  </script>
 </body>
 </html>

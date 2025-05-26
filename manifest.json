@@ -1,8 +1,8 @@
 {
-  "name": "Conta Gallerie",
-  "short_name": "Gallerie",
+  "name": "",
+  "short_name": "",
   "start_url": "index.html",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#121212",
   "theme_color": "#00ffe0",
   "orientation": "portrait",
