@@ -27,6 +27,18 @@
       min-height: 100vh;
     }
 
+    /* Nasconde tutto tranne il loader */
+    h1, #video, #dashboard, #summary {
+      display: none;
+    }
+
+    body.loaded h1,
+    body.loaded #video,
+    body.loaded #dashboard,
+    body.loaded #summary {
+      display: block;
+    }
+
     #loader {
       position: fixed;
       top: 0;
@@ -50,7 +62,12 @@
       font-size: 2rem;
       color: #00ffe0;
       text-shadow: 0 0 10px #00ffe0;
-      animation: glow 2s infinite ease-in-out;
+      animation: glow 1.2s infinite ease-in-out;
+    }
+
+    @keyframes glow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
 
     h1 {
@@ -78,6 +95,14 @@
       width: 90%;
       max-width: 360px;
       box-shadow: 0 0 20px rgba(0, 255, 247, 0.1);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    body.loaded .glass {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .info-item {
@@ -124,21 +149,6 @@
     #summary p {
       margin: 0.5rem 0;
     }
-	#dashboard {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 1s ease, transform 1s ease;
-}
-
-#dashboard.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-img.icon {
-  border-radius: 50%;
-  width: 64px;
-  height: 64px;
-}
   </style>
 </head>
 <body>
@@ -150,7 +160,6 @@ img.icon {
   <div class="glass" id="dashboard">
     <div class="info-item">💡 Luminosità: <span id="brightness" class="value">--</span></div>
     <div class="info-item">🚗 Velocità: <span id="speed" class="value">--</span> km/h</div>
-    <!--<div class="info-item">📍 Posizione: <span id="location" class="value">--</span></div>-->
     <div class="info-item">🏞️ Gallerie contate: <span id="count" class="value">0</span></div>
     <button onclick="resetCounter()">🔄 Reset</button>
     <button onclick="showSummary()">📊 Termina percorso</button>
@@ -162,6 +171,7 @@ img.icon {
     <p>Durata: <span id="summaryTime"></span></p>
     <p>Ultima posizione: <span id="summaryLocation"></span></p>
     <button onclick="copySummary()">📤 Copia riepilogo</button>
+	<button onclick="backToDashboard()">🔙 Torna alla dashboard</button>
   </div>
 
   <script>
@@ -180,6 +190,11 @@ img.icon {
     let currentSpeed = 0;
     let lastLat = '--', lastLon = '--';
     let startTime = new Date();
+
+function backToDashboard() {
+  document.getElementById('summary').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+}
 
     async function startCamera() {
       try {
@@ -236,16 +251,16 @@ img.icon {
         const speedMps = pos.coords.speed ?? 0;
         currentSpeed = speedMps * 3.6;
         speedEl.textContent = currentSpeed.toFixed(1);
-        locationEl.textContent = `${lat}, ${lon}`;
+       
       });
     }
 
     function resetCounter() {
-      if (confirm("Azzerare il conteggio?")) {
+     
         count = 0;
         localStorage.setItem("tunnelCount", count);
         countEl.textContent = count;
-      }
+      
     }
 
     function showSummary() {
@@ -262,7 +277,7 @@ img.icon {
 
     function copySummary() {
       const summary = `Gallerie: ${count}\nTempo: ${summaryTime.textContent}\nPosizione: ${summaryLocation.textContent}`;
-      navigator.clipboard.writeText(summary).then(() => alert("Riepilogo copiato!"));
+      navigator.clipboard.writeText(summary);
     }
 
     if ('serviceWorker' in navigator) {
@@ -270,15 +285,15 @@ img.icon {
     }
 
     window.onload = () => {
-      setTimeout(() => {
+  document.getElementById('summary').style.display = 'none'; // Forza a nascondere il riepilogo all’avvio
+  setTimeout(() => {
     document.getElementById('loader').style.display = 'none';
-    document.getElementById('dashboard').classList.add('show');
+    document.body.classList.add('loaded');
     startCamera();
   }, 2000);
-    };
+};
   </script>
-  
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YX78WFSZ8R"></script>
+   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YX78WFSZ8R"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
