@@ -124,6 +124,21 @@
     #summary p {
       margin: 0.5rem 0;
     }
+	#dashboard {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+#dashboard.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+img.icon {
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+}
   </style>
 </head>
 <body>
@@ -135,7 +150,7 @@
   <div class="glass" id="dashboard">
     <div class="info-item">💡 Luminosità: <span id="brightness" class="value">--</span></div>
     <div class="info-item">🚗 Velocità: <span id="speed" class="value">--</span> km/h</div>
-    <div class="info-item">📍 Posizione: <span id="location" class="value">--</span></div>
+    <!--<div class="info-item">📍 Posizione: <span id="location" class="value">--</span></div>-->
     <div class="info-item">🏞️ Gallerie contate: <span id="count" class="value">0</span></div>
     <button onclick="resetCounter()">🔄 Reset</button>
     <button onclick="showSummary()">📊 Termina percorso</button>
@@ -255,9 +270,21 @@
     }
 
     window.onload = () => {
-      setTimeout(() => document.getElementById('loader').style.display = 'none', 2000);
-      startCamera();
+      setTimeout(() => {
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('dashboard').classList.add('show');
+    startCamera();
+  }, 2000);
     };
   </script>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YX78WFSZ8R"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YX78WFSZ8R');
+</script>
 </body>
 </html>
