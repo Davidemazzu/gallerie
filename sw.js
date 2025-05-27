@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gallerie-cache-v2'; // nuova versione
+const CACHE_NAME = 'gallerie-cache-v3'; // nuova versione
 
 self.addEventListener('install', e => {
   e.waitUntil(
