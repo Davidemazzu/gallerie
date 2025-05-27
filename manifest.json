@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "short_name": "Gallerie",
+  "name": ".",
+  "short_name": "Conta Gallerie",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#121212",
