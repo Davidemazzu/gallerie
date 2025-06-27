@@ -180,7 +180,7 @@
         const avg = total / (pixels.length / 4);
         brightnessEl.textContent = avg.toFixed(0);
 
-        if (avg < 50 && currentSpeed > 30 && !insideTunnel) {
+        if (avg < 60 && currentSpeed > 15 && !insideTunnel) {
           insideTunnel = true;
           count++;
           countEl.textContent = count;
